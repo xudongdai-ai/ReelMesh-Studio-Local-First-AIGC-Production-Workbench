@@ -1,0 +1,9 @@
+{
+  "name": "hjsc-api",
+  "version": "0.7.1",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "sharp": "^0.35.3"
+  }
+}

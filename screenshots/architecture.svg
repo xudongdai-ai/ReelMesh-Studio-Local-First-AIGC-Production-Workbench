@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="780" viewBox="0 0 1440 780" role="img" aria-labelledby="title desc">
+  <title id="title">AIGC 自动化工作流系统架构</title>
+  <desc id="desc">浏览器和 Electron 进入 React 工作区，通过本机 API 访问 SQLite、文件存储与可选生成服务。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#737373"/></marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #222; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #666; }
+      .box { fill: #fff; stroke: #cfcfcf; stroke-width: 2; rx: 12; }
+      .soft { fill: #f4f4f4; stroke: #cfcfcf; stroke-width: 2; rx: 12; }
+      .dark { fill: #262626; stroke: #262626; stroke-width: 2; rx: 12; }
+      .white { fill: #fff; }
+      .label { font-size: 20px; font-weight: 650; }
+      .small { font-size: 15px; fill: #666; }
+      .line { fill: none; stroke: #737373; stroke-width: 2.5; marker-end: url(#arrow); }
+      .dashed { fill: none; stroke: #777; stroke-width: 2.5; stroke-dasharray: 8 8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1440" height="780" fill="#fafafa"/>
+  <text x="72" y="70" class="title">AIGC 自动化工作流 · 系统架构</text>
+  <text x="72" y="104" class="subtitle">本机优先的制作工作区；角色权限由 API 校验，素材与数据保存在本机</text>
+
+  <rect x="70" y="170" width="250" height="132" class="box"/>
+  <text x="195" y="218" class="label" text-anchor="middle">使用入口</text>
+  <text x="195" y="251" class="small" text-anchor="middle">浏览器 · Electron 桌面壳</text>
+  <text x="195" y="275" class="small" text-anchor="middle">四种角色独立入口</text>
+
+  <rect x="410" y="150" width="430" height="172" class="soft"/>
+  <text x="625" y="196" class="label" text-anchor="middle">React 工作区</text>
+  <text x="625" y="232" class="small" text-anchor="middle">OversightPortal · ProductionWorkspace</text>
+  <text x="625" y="260" class="small" text-anchor="middle">项目 · 规范 · 资产 · 分镜 · 审核 · 字幕 · 剪辑</text>
+  <text x="625" y="288" class="small" text-anchor="middle">角色入口：用户 / 经理 / 管理员 / 开发者</text>
+
+  <rect x="935" y="150" width="430" height="172" class="dark"/>
+  <text x="1150" y="196" class="label white" text-anchor="middle">本机 Node.js API</text>
+  <text x="1150" y="232" class="small white" text-anchor="middle">会话 · 角色权限 · 组织范围 · 工作流路由</text>
+  <text x="1150" y="260" class="small white" text-anchor="middle">默认 loopback：127.0.0.1:8787</text>
+  <text x="1150" y="288" class="small white" text-anchor="middle">客户端数据范围不替代服务端校验</text>
+
+  <path d="M 320 236 H 402" class="line"/>
+  <path d="M 840 236 H 927" class="line"/>
+
+  <rect x="900" y="430" width="250" height="138" class="box"/>
+  <text x="1025" y="477" class="label" text-anchor="middle">SQLite</text>
+  <text x="1025" y="511" class="small" text-anchor="middle">账号 · 项目 · 资产 · 审核</text>
+  <text x="1025" y="537" class="small" text-anchor="middle">本机持久化</text>
+
+  <rect x="1190" y="430" width="190" height="138" class="box"/>
+  <text x="1285" y="477" class="label" text-anchor="middle">文件存储</text>
+  <text x="1285" y="511" class="small" text-anchor="middle">原件 · 预览 · 导出</text>
+  <text x="1285" y="537" class="small" text-anchor="middle">本机数据目录</text>
+
+  <rect x="570" y="430" width="260" height="138" class="soft"/>
+  <text x="700" y="477" class="label" text-anchor="middle">媒体处理</text>
+  <text x="700" y="511" class="small" text-anchor="middle">转写 · 字幕烧录</text>
+  <text x="700" y="537" class="small" text-anchor="middle">模型与字体按需配置</text>
+
+  <rect x="270" y="430" width="240" height="138" class="box"/>
+  <text x="390" y="477" class="label" text-anchor="middle">外部生成服务</text>
+  <text x="390" y="511" class="small" text-anchor="middle">可选适配器</text>
+  <text x="390" y="537" class="small" text-anchor="middle">密钥仅由后端提供</text>
+
+  <path d="M 1030 322 V 390 H 1025 V 422" class="line"/>
+  <path d="M 1150 322 V 390 H 1285 V 422" class="line"/>
+  <path d="M 1030 322 V 388 H 700 V 422" class="line"/>
+  <path d="M 1030 322 V 376 H 390 V 422" class="dashed"/>
+
+  <text x="72" y="670" class="small">生产规范素材、客户字体与 Premiere 样式不随公开作品集源码分发；经授权后可由本地部署加载。</text>
+  <text x="72" y="704" class="small">架构图对应当前仓库代码，不表示外部服务、模型或正式 SaaS 部署已配置。</text>
+</svg>

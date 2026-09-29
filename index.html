@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReelMesh Studio</title>
+    <link rel="icon" type="image/svg+xml" href="/reelmesh-mark.svg" />
+    <style>
+      :root {
+        color: #111;
+        background: #f6f6f6;
+        font-family: Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f6f6f6; }
+      main { width: min(440px, calc(100vw - 28px)); padding: 42px; background: #fff; border: 1px solid #e1e1e1; border-radius: 12px; box-shadow: 0 18px 60px rgba(0,0,0,.06); }
+      .brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 18px; }
+      .brand-symbol { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 10px; color: #fff; background: #111; font-size: 21px; font-weight: 750; line-height: 1; }
+      .brand strong { display: block; font-size: 18px; }
+      .brand span { display: block; margin-top: 3px; color: #777; font-size: 12px; }
+      .tabs, .roles { display: grid; gap: 8px; }
+      .tabs { grid-template-columns: 1fr 1fr; margin-bottom: 14px; padding: 4px; background: #f2f2f2; border: 1px solid #e0e0e0; border-radius: 8px; }
+      .roles { grid-template-columns: repeat(4, 1fr); margin-bottom: 14px; }
+      button { height: 38px; border: 1px solid #d7d7d7; border-radius: 7px; background: #fff; color: #222; font-weight: 650; cursor: pointer; }
+      button.active, button.primary { background: #111; border-color: #111; color: #fff; }
+      button:disabled { cursor: not-allowed; opacity: .55; }
+      form { display: grid; gap: 11px; }
+      label { display: grid; gap: 6px; color: #666; font-size: 12px; font-weight: 650; }
+      input { width: 100%; height: 40px; padding: 0 12px; border: 1px solid #d9d9d9; border-radius: 7px; color: #111; background: #fff; outline: none; }
+      input:focus { border-color: #111; box-shadow: 0 0 0 3px rgba(0,0,0,.08); }
+      .hint { margin: 2px 0 0; color: #777; font-size: 12px; line-height: 1.55; }
+      .error { display: none; padding: 9px 10px; color: #8a1f1f; background: #fff2f2; border: 1px solid #ffd0d0; border-radius: 7px; font-size: 12px; line-height: 1.45; }
+      .error.show { display: block; }
+      .error.success { color: #174d2a; background: #f0faf3; border-color: #b9e2c4; }
+      .register-only { display: none; }
+      body.register .register-only { display: grid; }
+      body.register .roles { display: none; }
+      .invite-summary { display: none; margin-bottom: 14px; padding: 13px; background: #f7f7f7; border: 1px solid #dedede; border-radius: 8px; }
+      .invite-summary.show { display: grid; gap: 7px; }
+      .invite-summary strong { font-size: 14px; }
+      .invite-summary span { color: #666; font-size: 12px; line-height: 1.5; }
+      .blocked { display: none; margin: 0; padding: 10px; color: #666; background: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 7px; font-size: 12px; line-height: 1.55; }
+      .blocked.show { display: block; }
+      .submit-row { display: grid; gap: 8px; margin-top: 4px; }
+      .local-launch { display: none; gap: 8px; margin-top: 18px; text-align: center; }
+      .local-launch h1 { margin: 0; font-size: 17px; }
+      .local-launch p { margin: 0; color: #777; font-size: 13px; line-height: 1.6; }
+      .local-launch button { margin-top: 6px; }
+      .local-launch[hidden] { display: none; }
+      body.local-workspace .tabs,
+      body.local-workspace .roles,
+      body.local-workspace .invite-summary,
+      body.local-workspace #entry-form { display: none; }
+      body.local-workspace .local-launch { display: grid; }
+      @media (max-width: 540px) {
+        main { padding: 30px 22px; }
+        .roles { grid-template-columns: 1fr 1fr; }
+      }
+    </style>
+  </head>
+  <body class="login user-role">
+    <main>
+      <div class="brand">
+        <div class="brand-symbol" aria-hidden="true">R</div>
+        <div><strong>ReelMesh Studio</strong><span id="brand-subtitle">选择身份后进入对应工作台</span></div>
+      </div>
+
+      <section class="local-launch" id="local-launch" aria-live="polite" hidden>
+        <h1 id="local-launch-title">正在连接本机工作台</h1>
+        <p id="local-launch-message">验证本机身份后直接进入工作台。</p>
+        <button class="primary" id="local-retry" type="button" hidden>重新连接</button>
+      </section>
+
+      <div class="tabs" aria-label="登录注册切换">
+        <button class="active" type="button" data-mode="login">登录</button>
+        <button type="button" data-mode="register">邀请注册</button>
+      </div>
+
+      <div class="roles" aria-label="身份选择">
+        <button class="active" type="button" data-role="user">用户</button>
+        <button type="button" data-role="manager">经理</button>
+        <button type="button" data-role="admin">管理员</button>
+        <button type="button" data-role="developer">开发者</button>
+      </div>
+
+      <section class="invite-summary" id="invite-summary" aria-live="polite"></section>
+
+      <form id="entry-form">
+        <label class="register-only">姓名<input name="name" autocomplete="name" placeholder="请输入姓名" /></label>
+        <label>账号<input name="account" autocomplete="username" required placeholder="请输入账号" /></label>
+        <label>密码<input name="password" type="password" autocomplete="current-password" required placeholder="请输入密码" /></label>
+        <p class="blocked" id="blocked">注册需要管理员发出的有效邀请链接。组织编号不能用于注册。</p>
+        <p class="hint" id="hint">用户账号登录后进入用户端；管理员账号登录后进入管理端。</p>
+        <p class="error" id="error"></p>
+        <div class="submit-row">
+          <button class="primary" id="submit-button" type="submit">进入用户端</button>
+        </div>
+      </form>
+    </main>
+
+    <script>
+      const localApiHost = location.hostname || "127.0.0.1";
+      const localApiOrigin = `http://${localApiHost}:8787`;
+      const API_BASE = (location.protocol === "file:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")
+        ? `${localApiOrigin}/api`
+        : "/api";
+      const roleLabels = { user: "用户端", manager: "经理端", admin: "管理端", developer: "开发者端" };
+      const rolePages = { user: "user.html", manager: "manager.html", admin: "admin.html", developer: "developer.html" };
+      let mode = "login";
+      let role = "user";
+      let invitation = null;
+      const invitationToken = new URLSearchParams(location.hash.replace(/^#/, "")).get("invite") || "";
+      const localDesktopMode = location.protocol === "file:" && new URLSearchParams(location.search).get("local") === "1";
+      const localBrowserMode = location.protocol === "http:" && ["localhost", "127.0.0.1"].includes(location.hostname)
+        && ["/", "/index.html"].includes(location.pathname) && !invitationToken;
+      const localWorkspaceMode = localDesktopMode || localBrowserMode;
+
+      const form = document.getElementById("entry-form");
+      const errorBox = document.getElementById("error");
+      const hint = document.getElementById("hint");
+      const submitButton = document.getElementById("submit-button");
+      const blocked = document.getElementById("blocked");
+      const invitationSummary = document.getElementById("invite-summary");
+      const passwordInput = form.elements.password;
+      const localLaunch = document.getElementById("local-launch");
+      const localLaunchTitle = document.getElementById("local-launch-title");
+      const localLaunchMessage = document.getElementById("local-launch-message");
+      const localRetry = document.getElementById("local-retry");
+      const brandSubtitle = document.getElementById("brand-subtitle");
+
+      function setError(message, success = false) {
+        errorBox.textContent = message || "";
+        errorBox.classList.toggle("show", !!message);
+        errorBox.classList.toggle("success", !!message && success);
+      }
+
+      function syncUi(options = {}) {
+        document.body.className = `${mode} ${role}-role`;
+        document.querySelectorAll("[data-mode]").forEach((button) => button.classList.toggle("active", button.dataset.mode === mode));
+        document.querySelectorAll("[data-role]").forEach((button) => button.classList.toggle("active", button.dataset.role === role));
+        const registering = mode === "register";
+        const registerable = registering && !!invitation;
+        submitButton.disabled = registering && !registerable;
+        submitButton.textContent = registering ? (registerable ? "提交注册" : "需要有效邀请") : `进入${roleLabels[role]}`;
+        hint.textContent = registering
+          ? (invitation ? "账号身份和所属组织由邀请确定，不能在注册时修改。" : "请打开管理员发出的邀请链接后注册。")
+          : "选择身份后输入对应账号密码，系统会进入该身份工作台。";
+        blocked.classList.toggle("show", registering && !invitation);
+        invitationSummary.classList.toggle("show", registering && !!invitation);
+        passwordInput.autocomplete = registering ? "new-password" : "current-password";
+        if (!options.keepError) setError("");
+      }
+
+      async function request(path, body) {
+        const response = await fetch(`${API_BASE}${path}`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || "请求失败");
+        return payload;
+      }
+
+      function enterPortal(payload) {
+        const desktopToken = location.protocol === "file:" ? payload.token : null;
+        localStorage.setItem(`hjsc.v7.apiSession.${role}`, JSON.stringify({ token: desktopToken, account: payload.account }));
+        if (payload.token) sessionStorage.setItem(`hjsc.v7.sessionToken.${role}`, payload.token);
+        location.replace(`./${rolePages[role]}`);
+      }
+
+      async function loadInvitation() {
+        if (!invitationToken) return;
+        mode = "register";
+        syncUi();
+        try {
+          const payload = await request("/auth/invitations/inspect", { invitationToken });
+          invitation = payload.invitation;
+          role = invitation.role;
+          const expiresAt = new Date(invitation.expiresAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
+          const title = document.createElement("strong");
+          const details = document.createElement("span");
+          const approval = document.createElement("span");
+          title.textContent = `${payload.organization.name} · ${role === "manager" ? "经理" : "用户"}`;
+          details.textContent = `${invitation.department || "未设置部门"} · 有效至 ${expiresAt}`;
+          approval.textContent = invitation.requiresApproval ? "注册后需要管理员确认，确认后才能登录。" : "注册完成后可直接进入工作台。";
+          invitationSummary.replaceChildren(title, details, approval);
+          syncUi();
+        } catch (error) {
+          invitation = null;
+          setError(error.message || "邀请无效");
+          syncUi({ keepError: true });
+        }
+      }
+
+      document.querySelectorAll("[data-mode]").forEach((button) => button.addEventListener("click", () => {
+        mode = button.dataset.mode;
+        syncUi();
+      }));
+      document.querySelectorAll("[data-role]").forEach((button) => button.addEventListener("click", () => {
+        if (mode === "register") return;
+        role = button.dataset.role;
+        syncUi();
+      }));
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setError("");
+        const data = new FormData(form);
+        const account = data.get("account")?.trim();
+        const password = data.get("password")?.trim();
+        if (!account || !password) return setError("请填写账号和密码");
+        if (mode === "register" && !data.get("name")?.trim()) return setError("请填写姓名");
+        if (mode === "register" && !invitation) return setError("注册需要有效邀请链接");
+        submitButton.disabled = true;
+        try {
+          const payload = mode === "register"
+            ? await request("/auth/register", {
+              role,
+              name: data.get("name")?.trim(),
+              account,
+              password,
+              invitationToken,
+            })
+            : await request("/auth/login", { role, account, password });
+          if (payload.pendingApproval) {
+            history.replaceState(null, "", location.pathname + location.search);
+            mode = "login";
+            invitation = null;
+            form.elements.name.value = "";
+            passwordInput.value = "";
+            setError(payload.message || "注册已提交，请等待管理员确认后登录", true);
+            syncUi({ keepError: true });
+          } else {
+            enterPortal(payload);
+          }
+        } catch (error) {
+          setError(error.message || "操作失败");
+        } finally {
+          syncUi({ keepError: true });
+        }
+      });
+
+      syncUi();
+      loadInvitation();
+      window.addEventListener("hashchange", () => {
+        if (location.hash.includes("invite=")) location.reload();
+      });
+
+      async function enterLocalWorkspace() {
+        document.body.classList.add("local-workspace");
+        brandSubtitle.textContent = "本机生产工作台";
+        localLaunch.hidden = false;
+        localLaunchTitle.textContent = "正在连接本机工作台";
+        localLaunchMessage.textContent = "验证本机身份后直接进入工作台。";
+        localRetry.hidden = true;
+        document.querySelectorAll("button, input").forEach((element) => { element.disabled = true; });
+        try {
+          const payload = await request("/auth/local", {});
+          role = payload.account?.role || "developer";
+          enterPortal(payload);
+        } catch (error) {
+          localLaunchTitle.textContent = "本机工作台暂时无法连接";
+          localLaunchMessage.textContent = error.message === "Failed to fetch"
+            ? "本机数据服务未启动，请启动本机工作台服务后重试。"
+            : error.message || "请检查本机数据服务后重试。";
+          localRetry.hidden = false;
+          document.querySelectorAll("button, input").forEach((element) => { element.disabled = false; });
+        }
+      }
+
+      localRetry.addEventListener("click", enterLocalWorkspace);
+      if (localWorkspaceMode) enterLocalWorkspace();
+    </script>
+  </body>
+</html>

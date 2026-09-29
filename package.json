@@ -1,0 +1,73 @@
+{
+  "name": "reelmesh-studio",
+  "productName": "ReelMesh Studio",
+  "description": "Local-first AIGC production workbench for film and video workflows",
+  "author": "Dai Xudong (Murphy)",
+  "version": "0.8.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "electron-main.mjs",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "dev:api": "node --experimental-sqlite server/index.mjs",
+    "test:api": "node --experimental-sqlite scripts/verify-skill-module.mjs",
+    "test:h3": "node --experimental-sqlite scripts/verify-h3-connector.mjs",
+    "test:image": "node --experimental-sqlite scripts/verify-image-workflow.mjs",
+    "test:subtitle": "node scripts/verify-subtitle-delivery.mjs",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "desktop:user": "npm run build && electron electron-user.mjs",
+    "desktop:manager": "npm run build && electron electron-manager.mjs",
+    "desktop:admin": "npm run build && electron electron-admin.mjs",
+    "desktop:developer": "npm run build && electron electron-developer.mjs",
+    "desktop": "npm run build && electron electron-main.mjs",
+    "package:desktop": "npm run build && electron-builder --config electron-builder.single.cjs --mac dir --arm64",
+    "package:windows": "npm run build && electron-builder --config electron-builder.windows.cjs --win portable --x64",
+    "package:user": "npm run build && electron-builder --config electron-builder.user.cjs --mac dir --arm64",
+    "package:manager": "npm run build && electron-builder --config electron-builder.manager.cjs --mac dir --arm64",
+    "package:admin": "npm run build && electron-builder --config electron-builder.admin.cjs --mac dir --arm64",
+    "package:developer": "npm run build && electron-builder --config electron-builder.developer.cjs --mac dir --arm64",
+    "package:mac": "npm run build && electron-builder --config electron-builder.user.cjs --mac dir --arm64 && electron-builder --config electron-builder.manager.cjs --mac dir --arm64 && electron-builder --config electron-builder.admin.cjs --mac dir --arm64 && electron-builder --config electron-builder.developer.cjs --mac dir --arm64"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "@vitejs/plugin-react": "5.0.4",
+    "jszip": "^3.10.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "sharp": "^0.35.3",
+    "vite": "6.4.2",
+    "whisper-cpp-static": "^0.0.3",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^43.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.reelmesh.studio",
+    "productName": "ReelMesh Studio",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron-main.mjs",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
+    }
+  }
+}
