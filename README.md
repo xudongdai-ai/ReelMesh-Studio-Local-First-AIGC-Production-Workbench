@@ -97,3 +97,8 @@ The root MIT License applies only to first-party code and documentation. Origina
 ReelMesh Studio 是一款面向影视制作的本地优先工作台，涵盖项目规划、制作规范、资产版本与审核、分镜、生图任务、字幕批处理、剪辑和交付。项目使用 React、Vite、Node.js、SQLite 与 Electron。
 
 当前仓库是可本地运行的作品集源码，不提供在线 Demo；真实生图/视频服务、模型、字体和媒体处理工具需要另行配置。根目录 MIT 许可仅适用于第一方代码与文档，第三方和客户素材继续遵循各自许可。
+
+
+## Current portfolio scope
+
+[Public snapshot, evidence limits and private production boundary](docs/PORTFOLIO_SCOPE.md).
